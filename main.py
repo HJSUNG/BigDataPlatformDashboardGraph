@@ -1,3 +1,6 @@
+import os
+os.system('pip install webdriver-manager')
+
 from flask import Flask, render_template, jsonify
 from crawl_stock import get_today_price, get_daily_stock_prices
 from crawl_news import get_news_list
@@ -6,7 +9,9 @@ from crawl_us_stock import get_us_stock_price
 from crawl_weather import get_weather_info
 import requests
 
+from project2 import get_krw_exchange_rate
 
+from webdriver_manager.chrome import ChromeDriverManager
 
 app = Flask(__name__,
             static_url_path='',
@@ -15,18 +20,30 @@ app = Flask(__name__,
             )
 
 
-
 @app.route('/')
+def project2():
+    krw_exchange_rate = get_krw_exchange_rate()
+
+    print(krw_exchange_rate)
+
+    return render_template('project2.html', krw_exchange_rate=krw_exchange_rate)
+
+
+
+@app.route('/dashboard')
 def dashboard():
-    hyundai_price = get_today_price('005380')
+    # hyundai_price = get_today_price('005380')
+    hyundai_price = 100000
     company1_stock = {'title': "현대자동차", "today_price": hyundai_price}
     company1_news_list = get_news_list("현대자동차")
 
-    shinsegae_price = get_today_price('004170')
+    # shinsegae_price = get_today_price('004170')
+    shinsegae_price = 70000
     company2_stock = {'title': "신세계", "today_price": shinsegae_price}
     company2_news_list = get_news_list("신세계")
 
-    us_stock_price = {'title': "tesla", 'today_price': get_us_stock_price('tesla')}
+    # us_stock_price = {'title': "tesla", 'today_price': get_us_stock_price('tesla')}
+    us_stock_price = {'title': "tesla", 'today_price': 300000}
     bitcoin_price = get_bitcoin_price()
 
     weather_info = get_weather_info()
