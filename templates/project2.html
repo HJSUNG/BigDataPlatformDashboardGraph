@@ -44,7 +44,7 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bold;">금융</h1>
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bold;">증권</h1>
                     </div>
 
                     <!-- Content Row -->
@@ -81,6 +81,10 @@
                         </div>
                     </div>
 
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bold;">환율</h1>
+                    </div>
+
                     <div class="row">
                         <div class="col-xl-12 col-lg-12">
                             <div class="card shadow mb-4">
@@ -110,7 +114,7 @@
                             </tr>
                           </thead>
                           <tbody>
-                          {% for currency in krw_exchange_rate %}
+                          {% for currency in koreanexim_exchange_rate %}
                             <tr>
                                 <td>{{ currency.cur_unit }}</td>
                                 <td>{{ currency.cur_nm }}</td>
@@ -123,7 +127,23 @@
                         </table>
                     </div>
 
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4 mt-5">
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bold;">뉴스</h1>
+                    </div>
 
+                    <div class="row">
+                        {% for news in naver_news_data["items"] %}
+                        <div class="card shadow mb-4 ml-3" style="width: 100%">
+                            <div class="card-header py-3">
+                                <a href="{{ news.link }}"><h6 class="m-0 font-weight-bold text-primary">{{ news.title }}</h6></a>
+                            </div>
+                            <div class="card-body">
+                                <p>{{ news.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
 
                 </div>
                 <!-- /.container-fluid -->

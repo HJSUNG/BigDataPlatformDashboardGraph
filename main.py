@@ -9,7 +9,8 @@ from crawl_us_stock import get_us_stock_price
 from crawl_weather import get_weather_info
 import requests
 
-from project2 import get_krw_exchange_rate
+from project2 import get_koreanexim_exchange_rate,get_naver_news_data
+import json
 
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -22,11 +23,14 @@ app = Flask(__name__,
 
 @app.route('/')
 def project2():
-    krw_exchange_rate = get_krw_exchange_rate()
+    koreanexim_exchange_rate = get_koreanexim_exchange_rate()
+    naver_news_data = json.loads(get_naver_news_data())
 
-    print(krw_exchange_rate)
+    print(type(naver_news_data))
 
-    return render_template('project2.html', krw_exchange_rate=krw_exchange_rate)
+    return render_template('project2.html',
+                           koreanexim_exchange_rate=koreanexim_exchange_rate,
+                           naver_news_data=naver_news_data)
 
 
 
