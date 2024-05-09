@@ -9,7 +9,7 @@ from crawl_us_stock import get_us_stock_price
 from crawl_weather import get_weather_info
 import requests
 
-from project2 import get_koreanexim_exchange_rate,get_naver_news_data
+from project2 import get_koreanexim_exchange_rate,get_naver_news_data,crawl_kospi_data,crawl_kosdaq_data
 import json
 
 from webdriver_manager.chrome import ChromeDriverManager
@@ -26,13 +26,34 @@ def project2():
     koreanexim_exchange_rate = get_koreanexim_exchange_rate()
     naver_news_data = json.loads(get_naver_news_data())
 
-    print(type(naver_news_data))
+    news_title = "달러"
+    news_list = get_news_list(news_title)
+    print(news_list)
+
+    # kospi = crawl_kospi_data()
 
     return render_template('project2.html',
                            koreanexim_exchange_rate=koreanexim_exchange_rate,
-                           naver_news_data=naver_news_data)
+                           naver_news_data=naver_news_data,
+                           news_title=news_title,
+                           news_list=news_list)
 
 
+@app.route('/kospi')
+def get_kospi_data():
+    kospi = crawl_kospi_data()
+    print("done")
+    print(kospi["day"])
+    print(kospi["value"])
+    return [kospi["day"],kospi["value"]]
+
+@app.route('/kosdaq')
+def get_kosdaq_data():
+    kosdaq = crawl_kosdaq_data()
+    print("done")
+    print(kosdaq["day"])
+    print(kosdaq["value"])
+    return [kosdaq["day"],kosdaq["value"]]
 
 @app.route('/dashboard')
 def dashboard():
@@ -90,4 +111,4 @@ def get_pie_chart_data():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=5001, debug=True)

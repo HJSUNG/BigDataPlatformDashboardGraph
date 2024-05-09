@@ -1,6 +1,15 @@
 import requests
 import urllib.request
-import json
+
+from selenium import webdriver
+from selenium.common import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 def get_koreanexim_exchange_rate():
     koreanexim_url = 'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON'
@@ -36,3 +45,88 @@ def get_naver_news_data():
     else:
         print("Error Code:" + rescode)
         return "ERROR"
+
+
+def crawl_kospi_data():
+    # headless option
+    ops = webdriver.ChromeOptions()
+
+    ops.add_argument('headless')
+    ops.add_argument('window-size=1920x1080')
+
+    isNeedScroll = True
+
+    with webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=ops) as driver:
+        wait = WebDriverWait(driver, 15)
+        url = "https://m.stock.naver.com/domestic/index/KOSPI/total"
+        driver.get(url)
+
+        xpath_info = "/html/body/div[1]/div[1]/div[2]/div/div/div[13]/div[2]/div[2]"  # full xpath
+
+        while isNeedScroll:
+            try:
+                element = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, xpath_info)))
+                isNeedScroll = False
+            except TimeoutException:
+                driver.execute_script('window.scrollBy(0,800)')
+
+        # <ul> Tag들의 리스트
+        rows = element.find_elements(By.CSS_SELECTOR, "tr.CommTable_tr__pDDpC")
+        # print(rows[0].text)
+
+        day = []
+        value = []
+
+        day.append("day")
+        value.append("KOSPI 지수")
+
+        for i in range(len(rows)):
+            if i > 0:
+                day.append(rows[i].text.split(" ")[0])
+                value.append(float(rows[i].text.split(" ")[1].split('\n')[0].replace(",","")))
+
+
+        return {"day" : day, "value" : value}
+
+
+def crawl_kosdaq_data():
+    # headless option
+    ops = webdriver.ChromeOptions()
+
+    ops.add_argument('headless')
+    ops.add_argument('window-size=1920x1080')
+
+    isNeedScroll = True
+
+    with webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=ops) as driver:
+        wait = WebDriverWait(driver, 15)
+        url = "https://m.stock.naver.com/domestic/index/KOSDAQ/total"
+        driver.get(url)
+
+        xpath_info = "/html/body/div[1]/div[1]/div[2]/div/div/div[13]/div[2]/div[2]"  # full xpath
+
+        while isNeedScroll:
+            try:
+                element = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, xpath_info)))
+                isNeedScroll = False
+            except TimeoutException:
+                driver.execute_script('window.scrollBy(0,800)')
+
+        # <ul> Tag들의 리스트
+        rows = element.find_elements(By.CSS_SELECTOR, "tr.CommTable_tr__pDDpC")
+        # print(rows[0].text)
+
+        day = []
+        value = []
+
+        day.append("day")
+        value.append("KOSDAQ 지수")
+
+        for i in range(len(rows)):
+            if i > 0:
+                day.append(rows[i].text.split(" ")[0])
+                value.append(float(rows[i].text.split(" ")[1].split('\n')[0].replace(",","")))
+
+
+        return {"day" : day, "value" : value}
+
